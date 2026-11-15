@@ -1,6 +1,14 @@
 <html>
   <head>
     <title>Stefan's Dev And Experimentation Site</title>
+    <script src="https://cdn-ukwest.onetrust.com/scripttemplates/otSDKStub.js"
+      data-language="en"
+      data-domain-script="01a1e143-d573-74aa-9e8d-68b1efbc9522"></script>
+    <script>
+      function OptanonWrapper() {
+        console.log("OneTrust Loaded");
+      }
+    </script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -12,6 +20,7 @@
         'ad_personalization': 'denied',
         'functionality_storage': 'denied',
         'personalization_storage': 'denied',
+        'wait_for_update': 500
       });
       gtag('js', new Date());
     </script>
