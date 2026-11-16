@@ -26,8 +26,54 @@
     </script>
     <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-N9SLPGXX"></script>
   </head>
+
   <body>
+    <!-- Statistical Purposes Exception
+         First of two scripts -->
+    <script>
+      function speRewrite(button) {
+        var clone = button.cloneNode(true);
+        button.parentNode.replaceChild(clone, button);
+  
+        clone.addEventListener('click', function() {
+          OneTrust.UpdateConsent("Category", "C0014:1");
+        });
+      }
+    </script>
+
     <h1>Stefan's Dev And Experimentation Site</h1>
     <p>Nothing here, yet.</p>
+
+    <!-- Statistical Purposes Exception
+         Second of two script -->
+    <script>
+      "undefined" == typeof OneTrust || OneTrust.IsAlertBoxClosed() || function() {
+        var e = document.getElementById("onetrust-reject-all-handler");
+        e ? setTimeout((() => {
+            speRewrite(e)
+        }), 250) : window._otRejectObserver || (window._otRejectObserver = new MutationObserver((function(e) {
+            e.forEach((function(e) {
+                e.addedNodes.forEach((function(e) {
+                    if (1 === e.nodeType) {
+                        if ("onetrust-reject-all-handler" === e.id) return setTimeout((() => {
+                            speRewrite(e)
+                        }), 250), window._otRejectObserver.disconnect(), void(window._otRejectObserver = null);
+                        if (e.querySelector) {
+                            var t = e.querySelector("#onetrust-reject-all-handler");
+                            t && (setTimeout((() => {
+                                speRewrite(t)
+                            }), 250), window._otRejectObserver.disconnect(), window._otRejectObserver = null)
+                        }
+                    }
+                }))
+            }))
+        })), window._otRejectObserver.observe(document.body, {
+            childList: !0,
+            subtree: !0
+        }), setTimeout((function() {
+            window._otRejectObserver && (window._otRejectObserver.disconnect(), window._otRejectObserver = null)
+        }), 10000))
+      }();
+    </script>
   </body>
 </html>
