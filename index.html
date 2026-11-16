@@ -5,11 +5,63 @@
       data-language="en"
       data-domain-script="01a1e143-d573-74aa-9e8d-68b1efbc9522"></script>
     <script>
-      function OptanonWrapper() {
-        console.log("OneTrust Loaded");
+      // Statistical Purposes Exception - 1
+      function speRewrite(button) {
+        var clone = button.cloneNode(true);
+        console.log("[OneTrust] speRewrite called");
+        button.parentNode.replaceChild(clone, button);
+        clone.addEventListener('click', function() {
+          OneTrust.UpdateConsent("Category", "C0014:1");
+        });
       }
-    </script>
-    <script>
+      // Standard OneTrust Callback
+      function OptanonWrapper() {
+        console.log("[OneTrust] Loaded");
+        initRejectRewrite();
+      }
+      // Statistical Purposes Exception - 2
+      function initRejectRewrite() {
+        if (window._otRejectInit) return;
+        window.otRejectInit = true;
+
+        if (typeof OneTrust === "undefined" || OneTrust.IsAlertBoxClosed() ) return;
+
+        const id = "onetrust-reject-all-handler";
+
+        function apply(e) {
+          setTimeout(function () {
+            if (typeof window.speRewrite === "function") {
+              window.speRewrite(e);
+            } else {
+              console.warn("[OneTrust] speRewrite is not defined");
+            }
+          }, 250);
+        }
+
+        function watch() {
+          var e = document.getElementById(id);
+          if (e) return apply(e);
+          var timer;
+          var observer = new MutationObserver(function () {
+            var found = document.getElementById(id);
+            if (!found) return;
+            observer.disconnect();
+            clearTimeout(timer);
+            apply(found);
+          });
+
+          observer.observe(document.body, { childList: true, subtree: true });
+          timer = setTimeout(function () { observer.disconnect(); }, 10000);
+        }
+
+        if (document.body) {
+          watch();
+        } else {
+          document.addEventListener("DOMContentLoaded", watch);
+        }
+      }
+         
+      // Google Consent Mode V2
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('consent', 'default', {
@@ -28,52 +80,7 @@
   </head>
 
   <body>
-    <!-- Statistical Purposes Exception
-         First of two scripts -->
-    <script>
-      function speRewrite(button) {
-        var clone = button.cloneNode(true);
-        button.parentNode.replaceChild(clone, button);
-  
-        clone.addEventListener('click', function() {
-          OneTrust.UpdateConsent("Category", "C0014:1");
-        });
-      }
-    </script>
-
     <h1>Stefan's Dev And Experimentation Site</h1>
     <p>Nothing here, yet.</p>
-
-    <!-- Statistical Purposes Exception
-         Second of two script -->
-    <script>
-      "undefined" == typeof OneTrust || OneTrust.IsAlertBoxClosed() || function() {
-        var e = document.getElementById("onetrust-reject-all-handler");
-        e ? setTimeout((() => {
-            speRewrite(e)
-        }), 250) : window._otRejectObserver || (window._otRejectObserver = new MutationObserver((function(e) {
-            e.forEach((function(e) {
-                e.addedNodes.forEach((function(e) {
-                    if (1 === e.nodeType) {
-                        if ("onetrust-reject-all-handler" === e.id) return setTimeout((() => {
-                            speRewrite(e)
-                        }), 250), window._otRejectObserver.disconnect(), void(window._otRejectObserver = null);
-                        if (e.querySelector) {
-                            var t = e.querySelector("#onetrust-reject-all-handler");
-                            t && (setTimeout((() => {
-                                speRewrite(t)
-                            }), 250), window._otRejectObserver.disconnect(), window._otRejectObserver = null)
-                        }
-                    }
-                }))
-            }))
-        })), window._otRejectObserver.observe(document.body, {
-            childList: !0,
-            subtree: !0
-        }), setTimeout((function() {
-            window._otRejectObserver && (window._otRejectObserver.disconnect(), window._otRejectObserver = null)
-        }), 10000))
-      }();
-    </script>
   </body>
 </html>
